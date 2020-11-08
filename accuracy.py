@@ -30,7 +30,7 @@ print(model_names)
 parser = argparse.ArgumentParser(description='CNN accuracy and weight distribution exploration')
 parser.add_argument('--gpu', default=None, type=int,
                     help='GPU id to use.')
-parser.add_argument('--valdir', type=str, default='/home/hguan2/datasets/imagenet/val',
+parser.add_argument('--valdir', type=str, default='/home/abehr/datasets/imagenet/val',
                     help='test dataset')
 parser.add_argument('--dataset', type=str, default='imagenet', 
                     help='imagenet')

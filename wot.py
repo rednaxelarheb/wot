@@ -35,7 +35,7 @@ print(model_names)
 
 
 parser = argparse.ArgumentParser(description='PyTorch ImageNet Training')
-parser.add_argument('--data', default='/home/hguan2/datasets/imagenet/',
+parser.add_argument('--data', default='/home/abehr/datasets/imagenet/',
                     help='path to dataset')
 parser.add_argument('-a', '--arch', metavar='ARCH', default='resnet18',
                     choices=model_names,
@@ -389,7 +389,7 @@ def main_worker(gpu, ngpus_per_node, args):
     compression_scheduler = distiller.file_config(
         model,
         optimizer, 
-        '/home/hguan2/workspace/fault-tolerance/nips19/quant_aware_training.yaml', 
+        '/home/abehr/wot/quant_aware_training.yaml', 
         compression_scheduler, 
         (args.start_epoch-1) if args.resume else None)
     
