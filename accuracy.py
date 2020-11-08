@@ -53,6 +53,8 @@ parser.add_argument('--w-dist', action='store_true', default=False,
                     help='print quantized model weight distribution')
 parser.add_argument('--perch', action='store_true', default=False,
                     help='use per channel quant for weight quantization')
+parser.add_argument('--four-bit', action='store_true', default=False,
+                    help='use 4-bit quantization instead of 8-bit')
 
 args = parser.parse_args() 
 torch.manual_seed(args.seed)
@@ -77,6 +79,10 @@ def print_weight_distribution(model):
     
     # check the distribution of parameters all weights
     thr = 32
+    ranges = []
+    if args.four_bit:
+        thr = 4
+        ranges = ['[0, 4)', '[4, 8)', '[8, 16]']
     total_values, num_weights = 0, 0 
     counter = collections.Counter()
     for param_name, param in model.named_parameters():
@@ -101,7 +107,7 @@ def print_weight_distribution(model):
     
     percentages = [count*100/total_weights for count in counts]
     
-    for interval, c, p in zip(['[0, 32)', '[32, 64)', '[64, 128]'], counts, percentages):
+    for interval, c, p in zip(ranges, counts, percentages):
         print("{:>10}: {:>10d} {:>.2f}".format(interval, c, p))
         
 
@@ -116,9 +122,16 @@ if args.quantized_acc or args.w_dist:
     print("prepare quantized model ...")
     dummy_input = torch.empty(1, 3, 224, 224)
     quantized_model = distiller.deepcopy(model)
-    quantizer = distiller.quantization.PostTrainLinearQuantizer(
-        quantized_model, 
-        per_channel_wts=args.perch)
+    if args.four_bit:
+        quantizer = distiller.quantization.PostTrainLinearQuantizer(
+            quantized_model, 
+            per_channel_wts=args.perch,
+            bits_activations=4,
+            bits_parameters=4)
+    else:
+        quantizer = distiller.quantization.PostTrainLinearQuantizer(
+            quantized_model, 
+            per_channel_wts=args.perch)
     quantizer.prepare_model(dummy_input)
 
 
@@ -130,7 +143,10 @@ if args.original_acc:
     print('Before quantization, accuracy: %.2f, time(s): %.2f' %(acc1, s))
 
 if args.quantized_acc:
-    print('test 8-bit quantized model accuracy ...')
+    if args.four_bit:
+        print('test 4-bit quantized model accuracy ...')
+    else:
+        print('test 8-bit quantized model accuracy ...')
     s = time.time() 
     acc1 = test_imagenet(quantized_model, args.valdir, num_batches=args.num_batches)
     s = time.time() - s 
