@@ -240,6 +240,9 @@ def check_large_weights_count(model):
             weight_size = model.state_dict()[param_tensor].size()
             upper_bound = 63./weight_scale
             lower_bound = -64./weight_scale
+            if args.four_bit:
+                upper_bound = 7./weight_scale
+                lower_bound = -8./weight_scale
             
             weight_flat = weight.view(-1)
             N = len(weight_flat)
@@ -515,6 +518,8 @@ def update_admm_param(model, W_list, Z_list, U_list):
             
 def projection(weight, weight_scale):
     target = [-64., 63.]
+    if args.four_bit:
+        target = [-8., 7.]
     upper_bound = target[1]/weight_scale
     lower_bound = target[0]/weight_scale
     
@@ -660,6 +665,10 @@ def regulate_quantized_weight(model):
             # regulate the weight
             upper_bound = 63./weight_scale
             lower_bound = -64./weight_scale
+            if args.four_bit:
+                upper_bound = 7./weight_scale
+                lower_bound = -8./weight_scale
+
             
             weight_flat = weight.view(-1)
             
