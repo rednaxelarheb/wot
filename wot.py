@@ -95,6 +95,9 @@ parser.add_argument('--debug', action='store_true', default=False,
 parser.add_argument('--logdir', default='./trained/',
                     help='the directory to store trained models and train logs.')
 
+parser.add_argument('--four-bit', action='store_true', default=False,
+                    help='if true, use the 4-bit quantization schedule')
+
 class Mode:
     QAT = 'QAT'
     ADMM = 'ADMM'
@@ -386,10 +389,15 @@ def main_worker(gpu, ngpus_per_node, args):
     # add quantization scheduler
     global compression_scheduler
     compression_scheduler = distiller.CompressionScheduler(model) 
+    schedule_path = ""
+    if args.four_bit:
+        schedule_path = '/home/abehr/wot/quant_aware_training_four_bit.yaml'
+    else : 
+        schedule_path = '/home/abehr/wot/quant_aware_training.yaml' 
     compression_scheduler = distiller.file_config(
         model,
         optimizer, 
-        '/home/abehr/wot/quant_aware_training.yaml', 
+        schedule_path,
         compression_scheduler, 
         (args.start_epoch-1) if args.resume else None)
     
