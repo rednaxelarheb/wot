@@ -1,3 +1,5 @@
+Fork of the below for UMass Amherst CS692S Project Fall 2020
+
 Source code for the paper accepeted in NIPS'19: 
 *In-Place Zero-Space Memory Protection for CNN*
 
