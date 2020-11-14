@@ -13,7 +13,7 @@ mode=faulty
 # mode=zero
 # mode=avg
 # mode=ecc
-python fault_injection.py --arch ${model} --fault-type ${mode} --num-batches -1 --start-trial-id 0 --end-trial-id 2 |& tee ./log_faults/${model}_${mode}.txt
+python fault_injection.py --num_mem_bits 8 --arch ${model} --fault-type ${mode} --num-batches -1 --start-trial-id 0 --end-trial-id 2 |& tee ./log_faults/${model}_${mode}.txt
 
 ### inplace ### 
 # mode=inplace
