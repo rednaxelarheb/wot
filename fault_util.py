@@ -1,5 +1,7 @@
+from __main__ import *
 # inject faults into weights 
-import numpy as np 
+import numpy as np
+import argparse 
 import bitstring, time
 from  collections import defaultdict  
 import itertools, torch , collections 
@@ -11,9 +13,9 @@ import bisect
 # fault injection: random bit flip 
 ##############################################################
 
-def inject_faults_int8_random_bit_position(tensor, random, n_bits, debug_mode=False):
+def inject_faults_random_bit_position( tensor, random, n_bits, debug_mode=False):
     """ For the input tensor, randomly choose n_bits number of bits to flip. 
-    Total number of bits is num_values * 8.
+    Total number of bits is num_values * num_mem_bits.
     input tensor should be 1-d torch tensor. 
     Args:
     	- tensor (1-D torch tensor): the input torch tensor to inject faults. 
@@ -28,7 +30,7 @@ def inject_faults_int8_random_bit_position(tensor, random, n_bits, debug_mode=Fa
     start = time.time()
 
     num_values = tensor.nelement()
-    indexes = random.choice(num_values*8, size=n_bits, replace=False)
+    indexes = random.choice(num_values* args.num_mem_bits, size=n_bits, replace=False)
     sample_time = time.time() - start
     
     start = time.time() 
@@ -70,7 +72,7 @@ def _parity_bit_sum(v):
     bits = bitstring.pack('>b', v) # 8 bits
     code = (sum(bits)%2 == 1)
     return code 
-def _parity_bit_numpy(v, width=8):
+def _parity_bit_numpy(v, width=args.num_mem_bits):
     bits = np.binary_repr(v, width=width) # 8 bits
     code = (sum(x=='1' for x in bits)%2 ==1)
     return code 
@@ -126,9 +128,9 @@ def _correct_error_parity_avg(tensor, codes, flipped):
         corr[index.item()] = (value, new_value, index.item() not in flipped)
     return corr  
 
-def inject_faults_int8_random_bit_position_parity_zero(tensor, random, n_bits, debug_mode=False):
+def inject_faults_random_bit_position_parity_zero(tensor, random, n_bits, debug_mode=False):
     """ For the input tensor, apply parity zero protection. Input tensor should be 1-d torch tensor. 
-    Total number of bits is num_values * 8. The procedure is: 
+    Total number of bits is num_values * args.num_mem_bits. The procedure is: 
     Step 1: calculate parity encoding. 
     Step 2: randomly choose n_bits number of bits to flip for tensor 
     Step 3: randomly choose n_bits//8 number of bits to flip for the parity encoding. 
@@ -156,12 +158,12 @@ def inject_faults_int8_random_bit_position_parity_zero(tensor, random, n_bits, d
     encode_time = time.time() - start
     
     # step 2: inject faults to weights 
-    stats = inject_faults_int8_random_bit_position(tensor, random, n_bits, debug_mode=debug_mode)
+    stats = inject_faults_random_bit_position(tensor, random, n_bits, debug_mode=debug_mode)
     
     # step 3: inject faults to codes
     start = time.time()
     num_values = tensor.nelement()
-    indexes = random.choice(num_values, size=int(n_bits//8), replace=False)
+    indexes = random.choice(num_values, size=int(n_bits//args.num_mem_bits), replace=False)
     for i in indexes:
         codes[i] = 0 if codes[i]==1 else 1
     injection_time = time.time() - start 
@@ -190,12 +192,12 @@ def inject_faults_int8_random_bit_position_parity_avg(tensor, random, n_bits, de
     encode_time = time.time() - start
     
     # step 2: inject faults to weights 
-    stats = inject_faults_int8_random_bit_position(tensor, random, n_bits, debug_mode=debug_mode)
+    stats = inject_faults_random_bit_position(tensor, random, n_bits, debug_mode=debug_mode)
     
     # step 3: inject faults to codes
     start = time.time()
     num_values = tensor.nelement()
-    indexes = random.choice(num_values, size=int(n_bits//8), replace=False)
+    indexes = random.choice(num_values, size=int(n_bits//args.num_mem_bits), replace=False)
     for i in indexes:
         codes[i] = 0 if codes[i]==1 else 1
     injection_time = time.time() - start 
@@ -274,13 +276,13 @@ def _get_correctable_indexes(indexes, block_size=64, t=1):
                 corrected_indexes.add(k)
     return corrected_indexes 
 
-def inject_faults_int8_random_bit_position_bch(tensor, random, n_bits, debug_mode=False):
-    return _inject_faults_int8_random_bit_position_ecc(tensor, random, n_bits, t=2, debug_mode=debug_mode)
+def inject_faults_random_bit_position_bch(tensor, random, n_bits, debug_mode=False):
+    return _inject_faults_random_bit_position_ecc(tensor, random, n_bits, t=2, debug_mode=debug_mode)
 
-def inject_faults_int8_random_bit_position_ecc(tensor, random, n_bits, debug_mode=False):
-    return _inject_faults_int8_random_bit_position_ecc(tensor, random, n_bits, debug_mode=debug_mode)
+def inject_faults_random_bit_position_ecc(tensor, random, n_bits, debug_mode=False):
+    return _inject_faults_random_bit_position_ecc(tensor, random, n_bits, debug_mode=debug_mode)
 
-def _inject_faults_int8_random_bit_position_ecc(
+def _inject_faults_random_bit_position_ecc(
 	tensor, 
 	random, 
 	n_bits, 
@@ -290,7 +292,7 @@ def _inject_faults_int8_random_bit_position_ecc(
     
     '''
     For the input tensor, apply ecc protection. Input tensor should be 1-d torch tensor. 
-    Total number of bits is num_values * 8. The procedure is: 
+    Total number of bits is num_values * args.num_mem_bits. The procedure is: 
     Step 1: randomly choose n_bits number of bits to flip for tensor 
     Step 2: get the bit flipps that can be corrected via ECC. 
     Step 3: apply ECC correction.

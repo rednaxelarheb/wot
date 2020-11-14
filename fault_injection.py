@@ -15,15 +15,17 @@ from datetime import datetime
 import distiller 
 from eval_util import test_imagenet 
 from eval_util import AverageMeter, ProgressMeter, accuracy 
-from fault_util import *
+
 
 model_names = sorted(name for name in models.__dict__
     if name.islower() and not name.startswith("__")
     and callable(models.__dict__[name]))
 print(model_names)
 
-# settings
+# settings                    
 parser = argparse.ArgumentParser(description='Fault Injection')
+parser.add_argument('--num_mem_bits', default=None, type=int,
+                    help='Number of memory bits to use for quantization')
 parser.add_argument('--gpu', default=None, type=int,
                     help='GPU id to use.')
 parser.add_argument('--dataset', type=str, default='imagenet', 
@@ -53,6 +55,7 @@ parser.add_argument('--checkpoint', default=None, type=str,
 
 
 args = parser.parse_args()
+from fault_util import *
 torch.manual_seed(args.seed)
 
 args.save = os.path.join(args.save, args.arch, args.dataset, args.fault_type) 
@@ -67,12 +70,12 @@ print(args)
 
 def select_fault_injection_function():
     fn = {
-              'faulty': inject_faults_int8_random_bit_position, 
-              'zero': inject_faults_int8_random_bit_position_parity_zero,
-              'avg': inject_faults_int8_random_bit_position_parity_avg,
-              'ecc': inject_faults_int8_random_bit_position_ecc,
-              'inplace': inject_faults_int8_random_bit_position_ecc,
-              'bch': inject_faults_int8_random_bit_position_bch,
+              'faulty': inject_faults_random_bit_position, 
+              'zero': inject_faults_random_bit_position_parity_zero,
+              'avg': inject_faults_random_bit_position_parity_avg,
+              'ecc': inject_faults_random_bit_position_ecc,
+              'inplace': inject_faults_random_bit_position_ecc,
+              'bch': inject_faults_random_bit_position_bch,
 
          }
     assert args.fault_type in fn, "fault type: {} is not supported".format(args.fault_type)
