@@ -333,6 +333,22 @@ def main_worker(gpu, ngpus_per_node, args):
                                 momentum=args.momentum,
                                 weight_decay=args.weight_decay)
 
+    # add quantization scheduler
+    global compression_scheduler
+    compression_scheduler = distiller.CompressionScheduler(model) 
+    schedule_path = ""
+    if args.four_bit:
+        schedule_path = '/home/abehr/wot/quant_aware_training_four_bit.yaml'
+    else : 
+        schedule_path = '/home/abehr/wot/quant_aware_training.yaml' 
+    compression_scheduler = distiller.file_config(
+        model,
+        optimizer, 
+        schedule_path,
+        compression_scheduler, 
+        (args.start_epoch-1) if args.resume else None)
+
+
     # optionally resume from a checkpoint
     if args.resume:
         if os.path.isfile(args.resume):
@@ -343,12 +359,14 @@ def main_worker(gpu, ngpus_per_node, args):
             if args.gpu is not None:
                 # best_acc1 may be from a checkpoint from a different GPU
                 best_acc1 = best_acc1.to(args.gpu)
+            compression_scheduler.on_epoch_begin(args.start_epoch)
             model.load_state_dict(checkpoint['state_dict'])
             optimizer.load_state_dict(checkpoint['optimizer'])
             print("=> loaded checkpoint '{}' (epoch {})"
                   .format(args.resume, checkpoint['epoch']))
         else:
             print("=> no checkpoint found at '{}'".format(args.resume))
+
 
     cudnn.benchmark = True
 
@@ -389,20 +407,6 @@ def main_worker(gpu, ngpus_per_node, args):
         num_workers=args.workers, pin_memory=True)
 
 
-    # add quantization scheduler
-    global compression_scheduler
-    compression_scheduler = distiller.CompressionScheduler(model) 
-    schedule_path = ""
-    if args.four_bit:
-        schedule_path = '/home/abehr/wot/quant_aware_training_four_bit.yaml'
-    else : 
-        schedule_path = '/home/abehr/wot/quant_aware_training.yaml' 
-    compression_scheduler = distiller.file_config(
-        model,
-        optimizer, 
-        schedule_path,
-        compression_scheduler, 
-        (args.start_epoch-1) if args.resume else None)
     
     model.cuda()
     global epoch
