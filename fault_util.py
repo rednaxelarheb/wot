@@ -8,6 +8,7 @@ import itertools, torch , collections
 from multiprocessing import Pool 
 from functools import reduce
 import bisect 
+import math
 
 ##############################################################
 # fault injection: random bit flip 
@@ -35,8 +36,9 @@ def inject_faults_random_bit_position( tensor, random, n_bits, debug_mode=False)
     
     start = time.time() 
     stats = defaultdict(list)
+    shift_distance = math.log(args.num_mem_bits,2)
     for index in indexes:
-        vid, bid = index>>3, index&0b111
+        vid, bid = index>>shift_distance, index&args.num_mem_bits
         value = int(tensor[vid])
 
         assert value == tensor[vid], "value is not an integer," + str(value) + ', '+ str(tensor[vid])
@@ -294,7 +296,7 @@ def _inject_faults_random_bit_position_ecc(
     For the input tensor, apply ecc protection. Input tensor should be 1-d torch tensor. 
     Total number of bits is num_values * args.num_mem_bits. The procedure is: 
     Step 1: randomly choose n_bits number of bits to flip for tensor 
-    Step 2: get the bit flipps that can be corrected via ECC. 
+    Step 2: get the bit flips that can be corrected via ECC. 
     Step 3: apply ECC correction.
 
     Args:
@@ -313,7 +315,7 @@ def _inject_faults_random_bit_position_ecc(
     # 1. fault injection with correction 
     start = time.time()
     num_values = tensor.nelement()
-    indexes = random.choice(num_values*8, size=n_bits, replace=False)
+    indexes = random.choice(num_values * args.num_mem_bits, size=n_bits, replace=False)
     sample_time = time.time() - start
     
     # correct some error: put the indexes into data blocks, check whether a data block has more than two faults. 
@@ -322,8 +324,9 @@ def _inject_faults_random_bit_position_ecc(
     start = time.time() 
     stats = defaultdict(list)
     corr = {} 
+    shift_distance = math.log(args.num_mem_bits,2)
     for index in indexes:
-        vid, bid = index>>3, index&0b111
+        vid, bid = index>>shift_distance, index&args.num_mem_bits
         value = int(tensor[vid])
 
         assert value == tensor[vid], "value is not an integer," + str(value) + ', '+ str(tensor[vid])

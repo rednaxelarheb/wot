@@ -201,7 +201,7 @@ def perturb_weights(model, n_faults, trial_id, log_path, fault_injection_fn):
     
     assert flipped_bits == n_faults and changed_params <= n_faults, '%d, %d, %d' %(flipped_bits, changed_params, n_faults) 
     
-    total_bits = total_values* 8
+    total_bits = total_values * args.num_mem_bits
     info = 'trial: %d, n_faults: %d, total_params: %d' %(trial_id, n_faults, total_values)
     info += ', flipped_bits: %d (%.2e)' %(flipped_bits, flipped_bits*1.0/total_bits)
     info += ', changed_params: %d (%.2e)' %(changed_params, changed_params*1.0/total_values)
@@ -249,7 +249,7 @@ simulation_start = time.time()
 fault_rates = [0.0001] 
 for fault_rate in fault_rates:
     
-    n_faults = int(total_values * 8 * fault_rate)
+    n_faults = int(total_values * args.num_mem_bits * fault_rate)
     if n_faults <= 0: 
         continue
     
