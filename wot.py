@@ -667,6 +667,7 @@ def regulate_quantized_weight(model):
             weight_scale = model.state_dict()[quantized_weight_scale]
 
             # regulate the weight
+            # Set the bounds
             upper_bound = 63./weight_scale
             lower_bound = -64./weight_scale
             if args.four_bit:
@@ -676,12 +677,28 @@ def regulate_quantized_weight(model):
             
             weight_flat = weight.view(-1)
             
+            # Get indices of weights outside the bounds
             change_idx_list_l = np.nonzero(weight_flat > upper_bound)
             change_idx_list_s = np.nonzero(weight_flat < lower_bound)
             change_idx_l_flat = change_idx_list_l.view(-1)
             change_idx_s_flat = change_idx_list_s.view(-1)
-            overide_idx_l = np.nonzero(change_idx_l_flat % 8 != 7)
-            overide_idx_s = np.nonzero(change_idx_s_flat % 8 != 7)
+
+            if args.four_bit:
+                # 4-bit 
+                # Allow every sixteenth weight to be large
+                overide_idx_l_16 = np.nonzero(change_idx_l_flat % 16 != 15)
+                overide_idx_s_16 = np.nonzero(change_idx_s_flat % 16 != 15)
+                # Allow even weights to be large
+                overide_idx_l_odd = np.nonzero(change_idx_l_flat % 2 != 0)
+                overide_idx_s_odd = np.nonzero(change_idx_s_flat % 2 != 0)
+                # Concatenate the two lists of exceptions
+                overide_idx_l = np.concatenate((overide_idx_l_16, overide_idx_l_odd), axis=0)
+                overide_idx_s = np.concatenate((overide_idx_s_16, overide_idx_s_odd), axis=0)
+            else:
+                # 8-bit 
+                # allow every eighth weight be large
+                overide_idx_l = np.nonzero(change_idx_l_flat % 8 != 7)
+                overide_idx_s = np.nonzero(change_idx_s_flat % 8 != 7)
 
 
             float_weight_flat = float_weight.view(-1)
