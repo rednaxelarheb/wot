@@ -36,7 +36,7 @@ def inject_faults_random_bit_position( tensor, random, n_bits, debug_mode=False)
     
     start = time.time() 
     stats = defaultdict(list)
-    shift_distance = math.log(args.num_mem_bits,2)
+    shift_distance = int(math.log(args.num_mem_bits,2))
     for index in indexes:
         vid, bid = index>>shift_distance, index&args.num_mem_bits
         value = int(tensor[vid])
@@ -184,7 +184,7 @@ def inject_faults_random_bit_position_parity_zero(tensor, random, n_bits, debug_
           %( encode_time, injection_time, correction_time))
     return stats, corr 
 
-def inject_faults_int8_random_bit_position_parity_avg(tensor, random, n_bits, debug_mode=False):
+def inject_faults_random_bit_position_parity_avg(tensor, random, n_bits, debug_mode=False):
     assert len(tensor.size()) == 1, "The input tensor is not a 1-D vector. Current shape:{}".format(tensor.size())
     # step 1: parity encoding 
     start = time.time()
@@ -324,7 +324,7 @@ def _inject_faults_random_bit_position_ecc(
     start = time.time() 
     stats = defaultdict(list)
     corr = {} 
-    shift_distance = math.log(args.num_mem_bits,2)
+    shift_distance = int(math.log(args.num_mem_bits,2))
     for index in indexes:
         vid, bid = index>>shift_distance, index&args.num_mem_bits
         value = int(tensor[vid])

@@ -685,15 +685,10 @@ def regulate_quantized_weight(model):
 
             if args.four_bit:
                 # 4-bit 
-                # Allow every sixteenth weight to be large
-                overide_idx_l_16 = np.nonzero(change_idx_l_flat % 16 != 15)
-                overide_idx_s_16 = np.nonzero(change_idx_s_flat % 16 != 15)
-                # Allow even weights to be large
-                overide_idx_l_odd = np.nonzero(change_idx_l_flat % 2 != 0)
-                overide_idx_s_odd = np.nonzero(change_idx_s_flat % 2 != 0)
-                # Concatenate the two lists of exceptions
-                overide_idx_l = np.concatenate((overide_idx_l_16, overide_idx_l_odd), axis=0)
-                overide_idx_s = np.concatenate((overide_idx_s_16, overide_idx_s_odd), axis=0)
+                # Allow every sixteenth and even weights to be large
+                overide_idx_l_16 = np.nonzero((change_idx_l_flat % 16 != 15) | (change_idx_l_flat % 2 != 0))
+                overide_idx_s_16 = np.nonzero(change_idx_s_flat % 16 != 15 | (change_idx_s_flat % 2 != 0))
+                
             else:
                 # 8-bit 
                 # allow every eighth weight be large
