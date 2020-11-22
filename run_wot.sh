@@ -11,7 +11,8 @@ fi
 model=resnet18
 # model=resnet34
 # model=squeezenet1_0
-python wot.py --pretrained --arch ${model} --batch-size 128 --gpu 0 --mode ${mode} --lr 0.0001  |& tee ./log_wot/${model}_${mode}.txt
+python wot.py --four-bit --pretrained --arch ${model} --batch-size 128 --gpu 0 --mode ${mode} --lr 0.0001  |& tee ./log_wot/${model}_${mode}.txt
+#python wot.py --pretrained --arch ${model} --batch-size 128 --gpu 0 --mode ${mode} --lr 0.0001  |& tee ./log_wot/${model}_${mode}.txt
 
 ## batch size: 64
 # model=resnet50
