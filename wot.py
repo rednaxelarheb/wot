@@ -260,6 +260,7 @@ def check_large_weights_count(model):
             change_idx_list_s = np.nonzero(weight_flat < lower_bound)
             change_idx_l_flat = change_idx_list_l.view(-1)
             change_idx_s_flat = change_idx_list_s.view(-1)
+            
             overide_idx_l = np.nonzero(change_idx_l_flat % 8 != 7)
             overide_idx_s = np.nonzero(change_idx_s_flat % 8 != 7)
 
@@ -532,8 +533,17 @@ def projection(weight, weight_scale):
     change_idx_list_s = np.nonzero(weight_flat < lower_bound)
     change_idx_l_flat = change_idx_list_l.view(-1)
     change_idx_s_flat = change_idx_list_s.view(-1)
-    overide_idx_l = np.nonzero(change_idx_l_flat % 8 != 7)
-    overide_idx_s = np.nonzero(change_idx_s_flat % 8 != 7)
+   if args.four_bit:
+        # 4-bit 
+        # Allow every sixteenth and even weights to be large
+        overide_idx_l = np.nonzero((change_idx_l_flat % 2 != 0) & (change_idx_l_flat % 15 != 0))
+        overide_idx_s = np.nonzero((change_idx_s_flat % 2 != 0) & (change_idx_s_flat % 15 != 0))
+                
+    else:
+        # 8-bit 
+        # allow every eighth weight be large
+        overide_idx_l = np.nonzero(change_idx_l_flat % 8 != 7)
+        overide_idx_s = np.nonzero(change_idx_s_flat % 8 != 7)
             
     weight_flat[change_idx_l_flat[overide_idx_l]] = upper_bound
     weight_flat[change_idx_s_flat[overide_idx_s]] = lower_bound
@@ -686,8 +696,8 @@ def regulate_quantized_weight(model):
             if args.four_bit:
                 # 4-bit 
                 # Allow every sixteenth and even weights to be large
-                overide_idx_l_16 = np.nonzero((change_idx_l_flat % 16 != 15) | (change_idx_l_flat % 2 != 0))
-                overide_idx_s_16 = np.nonzero(change_idx_s_flat % 16 != 15 | (change_idx_s_flat % 2 != 0))
+                overide_idx_l = np.nonzero((change_idx_l_flat % 2 != 0) & (change_idx_l_flat % 15 != 0))
+                overide_idx_s = np.nonzero((change_idx_s_flat % 2 != 0) & (change_idx_s_flat % 15 != 0))
                 
             else:
                 # 8-bit 
