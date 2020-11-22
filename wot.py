@@ -542,7 +542,7 @@ def projection(weight, weight_scale):
     change_idx_list_s = np.nonzero(weight_flat < lower_bound)
     change_idx_l_flat = change_idx_list_l.view(-1)
     change_idx_s_flat = change_idx_list_s.view(-1)
-   if args.four_bit:
+    if args.four_bit:
         # 4-bit 
         # Allow every sixteenth and even weights to be large
         overide_idx_l = np.nonzero((change_idx_l_flat % 2 != 0) & (change_idx_l_flat % 15 != 0))
