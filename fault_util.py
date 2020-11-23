@@ -252,7 +252,7 @@ def _test_parity_bit():
 # use SEC-DCD to detect error and correct error 
 ##############################################################
     
-def _get_correctable_indexes(indexes, block_size=64, t=1):
+def _get_correctable_indexes(indexes, block_size=32, t=1):
     ''' 
     This method gets the bit indexes that can be corrected using ECC. 
     It tries to bucketize the indexes using block_size and check the number of indexes
