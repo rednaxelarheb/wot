@@ -263,7 +263,7 @@ def check_large_weights_count(model):
             
             if args.four_bit:
                 # 4-bit 
-                # Allow every sixteenth and even weights to be large
+                # Allow every fifteenth and even weight to be large
                 overide_idx_l = np.nonzero((change_idx_l_flat % 2 != 0) & (change_idx_l_flat % 15 != 0))
                 overide_idx_s = np.nonzero((change_idx_s_flat % 2 != 0) & (change_idx_s_flat % 15 != 0))
                 
@@ -544,7 +544,7 @@ def projection(weight, weight_scale):
     change_idx_s_flat = change_idx_list_s.view(-1)
     if args.four_bit:
         # 4-bit 
-        # Allow every sixteenth and even weights to be large
+        # Allow every fifteenth and even weight to be large
         overide_idx_l = np.nonzero((change_idx_l_flat % 2 != 0) & (change_idx_l_flat % 15 != 0))
         overide_idx_s = np.nonzero((change_idx_s_flat % 2 != 0) & (change_idx_s_flat % 15 != 0))
                 
@@ -704,7 +704,7 @@ def regulate_quantized_weight(model):
 
             if args.four_bit:
                 # 4-bit 
-                # Allow every sixteenth and even weights to be large
+                # Allow every fifteenth and even weight to be large
                 overide_idx_l = np.nonzero((change_idx_l_flat % 2 != 0) & (change_idx_l_flat % 15 != 0))
                 overide_idx_s = np.nonzero((change_idx_s_flat % 2 != 0) & (change_idx_s_flat % 15 != 0))
                 
