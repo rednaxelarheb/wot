@@ -264,9 +264,13 @@ def check_large_weights_count(model):
             if args.four_bit:
                 # 4-bit 
                 # Allow every fifteenth and even weight to be large
-                overide_idx_l = np.nonzero((change_idx_l_flat % 2 != 0) & (change_idx_l_flat % 15 != 0))
-                overide_idx_s = np.nonzero((change_idx_s_flat % 2 != 0) & (change_idx_s_flat % 15 != 0))
+                # overide_idx_l = np.nonzero((change_idx_l_flat % 2 != 0) & (change_idx_l_flat % 15 != 0))
+                # overide_idx_s = np.nonzero((change_idx_s_flat % 2 != 0) & (change_idx_s_flat % 15 != 0))
                 
+                # Allow every 7th and the 8th weights to be large
+                overide_idx_l = np.nonzero((change_idx_l_flat % 6 != 0) & (change_idx_l_flat % 7 != 0))
+                overide_idx_s = np.nonzero((change_idx_s_flat % 6 != 0) & (change_idx_s_flat % 7 != 0))
+
             else:
                 # 8-bit 
                 # allow every eighth weight be large
@@ -545,8 +549,12 @@ def projection(weight, weight_scale):
     if args.four_bit:
         # 4-bit 
         # Allow every fifteenth and even weight to be large
-        overide_idx_l = np.nonzero((change_idx_l_flat % 2 != 0) & (change_idx_l_flat % 15 != 0))
-        overide_idx_s = np.nonzero((change_idx_s_flat % 2 != 0) & (change_idx_s_flat % 15 != 0))
+        #overide_idx_l = np.nonzero((change_idx_l_flat % 2 != 0) & (change_idx_l_flat % 15 != 0))
+        #overide_idx_s = np.nonzero((change_idx_s_flat % 2 != 0) & (change_idx_s_flat % 15 != 0))
+
+        # Allow every 7th and the 8th weight to be large
+        overide_idx_l = np.nonzero((change_idx_l_flat % 6 != 0) & (change_idx_l_flat % 7 != 0))
+        overide_idx_s = np.nonzero((change_idx_s_flat % 6 != 0) & (change_idx_s_flat % 7 != 0))
                 
     else:
         # 8-bit 
@@ -705,9 +713,13 @@ def regulate_quantized_weight(model):
             if args.four_bit:
                 # 4-bit 
                 # Allow every fifteenth and even weight to be large
-                overide_idx_l = np.nonzero((change_idx_l_flat % 2 != 0) & (change_idx_l_flat % 15 != 0))
-                overide_idx_s = np.nonzero((change_idx_s_flat % 2 != 0) & (change_idx_s_flat % 15 != 0))
+                #overide_idx_l = np.nonzero((change_idx_l_flat % 2 != 0) & (change_idx_l_flat % 15 != 0))
+                #overide_idx_s = np.nonzero((change_idx_s_flat % 2 != 0) & (change_idx_s_flat % 15 != 0))
                 
+                # Allow every 7th and the 8th weight to be large
+                overide_idx_l = np.nonzero((change_idx_l_flat % 6 != 0) & (change_idx_l_flat % 7 != 0))
+                overide_idx_s = np.nonzero((change_idx_s_flat % 6 != 0) & (change_idx_s_flat % 7 != 0))
+
             else:
                 # 8-bit 
                 # allow every eighth weight be large
