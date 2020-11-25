@@ -289,7 +289,7 @@ def _inject_faults_random_bit_position_ecc(
 	random, 
 	n_bits, 
 	#block_size=64, 
-	block_size=32
+	block_size=32,
     t=1, 
 	debug_mode=False):
     

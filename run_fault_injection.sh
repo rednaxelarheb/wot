@@ -18,4 +18,4 @@ python fault_injection.py --num_mem_bits 8 --arch ${model} --fault-type ${mode} 
 ### inplace ### 
 # mode=inplace
 # checkpoint=/home/hguan2/Documents/code/nips19/models/squeezenet1_0/model_best.pth.tar 
-# python fault_injection.py --arch ${model} --fault-type ${mode} --checkpoint ${checkpoint} --num-batches -1 --start-trial-id 0 --end-trial-id 2 |& tee ./log_faults/${model}_${mode}.txt
+# python fault_injection.py --num_mem_bits 8 --arch ${model} --fault-type ${mode} --checkpoint ${checkpoint} --num-batches -1 --start-trial-id 0 --end-trial-id 2 |& tee ./log_faults/${model}_${mode}.txt
