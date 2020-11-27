@@ -98,12 +98,13 @@ parser.add_argument('--logdir', default='./trained/',
 parser.add_argument('--four-bit', action='store_true', default=False,
                     help='if true, use the 4-bit quantization schedule')
 
+parser.add_argument('--thirty-two-bit-code', action='store_true', default=False,
+                    help='if true, use the 32-bit hamming code')
+
 class Mode:
     QAT = 'QAT'
     ADMM = 'ADMM'
     WOT = 'WOT'
-    
-
 
 
 best_acc1 = 0
@@ -261,27 +262,35 @@ def check_large_weights_count(model):
             change_idx_l_flat = change_idx_list_l.view(-1)
             change_idx_s_flat = change_idx_list_s.view(-1)
             
-            if args.four_bit:
-                # 4-bit 
-                # Allow every fifteenth and even weight to be large
-                overide_idx_l = np.nonzero((change_idx_l_flat % 2 != 0) & (change_idx_l_flat % 16 != 14) & (change_idx_l_flat % 16 != 15))
-                overide_idx_s = np.nonzero((change_idx_s_flat % 2 != 0) & (change_idx_s_flat % 16 != 14) & (change_idx_s_flat % 16 != 15))
-                
-                # Allow every 7th and the 8th weight to be large
-                #overide_idx_l = np.nonzero((change_idx_l_flat % 8 != 6) & (change_idx_l_flat % 8 != 7))
-                #overide_idx_s = np.nonzero((change_idx_s_flat % 8 != 6) & (change_idx_s_flat % 8 != 7))
-
-            else:
-                # 8-bit 
-                # allow every eighth weight be large
-                overide_idx_l = np.nonzero(change_idx_l_flat % 8 != 7)
-                overide_idx_s = np.nonzero(change_idx_s_flat % 8 != 7)
+            overide_idx_l, overide_idx_s = get_overide_idx(change_idx_l_flat, change_idx_s_flat)
 
             count += overide_idx_l.nelement()
             count += overide_idx_s.nelement()
             
 #     print('weight statistics: ', count, total, count/total)
     return count 
+
+
+def get_overide_idx(change_idx_l_flat, change_idx_s_flat):
+    if args.four_bit:
+        # 4-bit quantization
+        if args.thirty_two_bit_code:
+            # 32 bit hamming code
+            # Allow every 7th and the 8th weight to be large
+            overide_idx_l = np.nonzero((change_idx_l_flat % 8 != 6) & (change_idx_l_flat % 8 != 7))
+            overide_idx_s = np.nonzero((change_idx_s_flat % 8 != 6) & (change_idx_s_flat % 8 != 7))
+        else:
+            # 64 bit hamming code
+            # Allow every 16th and even weight to be large
+            overide_idx_l = np.nonzero((change_idx_l_flat % 2 != 0) & (change_idx_l_flat % 16 != 15))
+            overide_idx_s = np.nonzero((change_idx_s_flat % 2 != 0) & (change_idx_s_flat % 16 != 15))
+    else:
+        # 8-bit quantization
+        # 64 bit hamming code
+        # Allow every 8th weight be large
+        overide_idx_l = np.nonzero(change_idx_l_flat % 8 != 7)
+        overide_idx_s = np.nonzero(change_idx_s_flat % 8 != 7)
+    return overide_idx_l, overide_idx_s
 
 
 def main_worker(gpu, ngpus_per_node, args):
@@ -546,21 +555,8 @@ def projection(weight, weight_scale):
     change_idx_list_s = np.nonzero(weight_flat < lower_bound)
     change_idx_l_flat = change_idx_list_l.view(-1)
     change_idx_s_flat = change_idx_list_s.view(-1)
-    if args.four_bit:
-        # 4-bit 
-        # Allow every fifteenth and even weight to be large
-        overide_idx_l = np.nonzero((change_idx_l_flat % 2 != 0) & (change_idx_l_flat % 16 != 14) & (change_idx_l_flat % 16 != 15))
-        overide_idx_s = np.nonzero((change_idx_s_flat % 2 != 0) & (change_idx_s_flat % 16 != 14) & (change_idx_s_flat % 16 != 15))
 
-        # Allow every 7th and the 8th weight to be large
-        #overide_idx_l = np.nonzero((change_idx_l_flat % 8 != 6) & (change_idx_l_flat % 8 != 7))
-        #overide_idx_s = np.nonzero((change_idx_s_flat % 8 != 6) & (change_idx_s_flat % 8 != 7))
-                
-    else:
-        # 8-bit 
-        # allow every eighth weight be large
-        overide_idx_l = np.nonzero(change_idx_l_flat % 8 != 7)
-        overide_idx_s = np.nonzero(change_idx_s_flat % 8 != 7)
+    overide_idx_l, overide_idx_s = get_overide_idx(change_idx_l_flat, change_idx_s_flat)
             
     weight_flat[change_idx_l_flat[overide_idx_l]] = upper_bound
     weight_flat[change_idx_s_flat[overide_idx_s]] = lower_bound
@@ -710,22 +706,7 @@ def regulate_quantized_weight(model):
             change_idx_l_flat = change_idx_list_l.view(-1)
             change_idx_s_flat = change_idx_list_s.view(-1)
 
-            if args.four_bit:
-                # 4-bit 
-                # Allow every fifteenth and even weight to be large
-                overide_idx_l = np.nonzero((change_idx_l_flat % 2 != 0) & (change_idx_l_flat % 16 != 14) & (change_idx_l_flat % 16 != 15))
-                overide_idx_s = np.nonzero((change_idx_s_flat % 2 != 0) & (change_idx_s_flat % 16 != 14) & (change_idx_s_flat % 16 != 15))
-                
-                # Allow every 7th and the 8th weight to be large
-                #overide_idx_l = np.nonzero((change_idx_l_flat % 8 != 6) & (change_idx_l_flat % 8 != 7))
-                #overide_idx_s = np.nonzero((change_idx_s_flat % 8 != 6) & (change_idx_s_flat % 8 != 7))
-
-            else:
-                # 8-bit 
-                # allow every eighth weight be large
-                overide_idx_l = np.nonzero(change_idx_l_flat % 8 != 7)
-                overide_idx_s = np.nonzero(change_idx_s_flat % 8 != 7)
-
+            overide_idx_l, overide_idx_s = get_overide_idx(change_idx_l_flat, change_idx_s_flat)
 
             float_weight_flat = float_weight.view(-1)
             float_weight_flat[change_idx_l_flat[overide_idx_l]] = float_weight_flat[change_idx_l_flat[overide_idx_l]]*upper_bound/ weight_flat[change_idx_l_flat[overide_idx_l]]           

@@ -53,6 +53,8 @@ parser.add_argument('--clean-dir', action='store_true', default=False,
 parser.add_argument('--checkpoint', default=None, type=str,
                     help='the QAT-trained model')
 
+parser.add_argument('--thirty-two-bit-code', action='store_true', default=False,
+                    help='if true, use the 32-bit hamming code')
 
 args = parser.parse_args()
 from fault_util import *

@@ -36,9 +36,9 @@ def inject_faults_random_bit_position( tensor, random, n_bits, debug_mode=False)
     
     start = time.time() 
     stats = defaultdict(list)
-    shift_distance = int(math.log(args.num_mem_bits,2))
+    shift_distance = int(math.log(args.num_mem_bits, 2))
     for index in indexes:
-        vid, bid = index>>shift_distance, index&args.num_mem_bits
+        vid, bid = index>>shift_distance, index & args.num_mem_bits
         value = int(tensor[vid])
 
         assert value == tensor[vid], "value is not an integer," + str(value) + ', '+ str(tensor[vid])
@@ -165,7 +165,7 @@ def inject_faults_random_bit_position_parity_zero(tensor, random, n_bits, debug_
     # step 3: inject faults to codes
     start = time.time()
     num_values = tensor.nelement()
-    indexes = random.choice(num_values, size=int(n_bits//args.num_mem_bits), replace=False)
+    indexes = random.choice(num_values, size=int(n_bits // args.num_mem_bits), replace=False)
     for i in indexes:
         codes[i] = 0 if codes[i]==1 else 1
     injection_time = time.time() - start 
@@ -199,7 +199,7 @@ def inject_faults_random_bit_position_parity_avg(tensor, random, n_bits, debug_m
     # step 3: inject faults to codes
     start = time.time()
     num_values = tensor.nelement()
-    indexes = random.choice(num_values, size=int(n_bits//args.num_mem_bits), replace=False)
+    indexes = random.choice(num_values, size=int(n_bits // args.num_mem_bits), replace=False)
     for i in indexes:
         codes[i] = 0 if codes[i]==1 else 1
     injection_time = time.time() - start 
@@ -252,7 +252,7 @@ def _test_parity_bit():
 # use SEC-DCD to detect error and correct error 
 ##############################################################
     
-def _get_correctable_indexes(indexes, block_size=32, t=1):
+def _get_correctable_indexes(indexes, block_size=64, t=1):
     ''' 
     This method gets the bit indexes that can be corrected using ECC. 
     It tries to bucketize the indexes using block_size and check the number of indexes
@@ -288,8 +288,7 @@ def _inject_faults_random_bit_position_ecc(
 	tensor, 
 	random, 
 	n_bits, 
-	#block_size=64, 
-	block_size=32,
+	block_size=64, 
     t=1, 
 	debug_mode=False):
     
@@ -312,6 +311,10 @@ def _inject_faults_random_bit_position_ecc(
     - corr (dict): key-value pairs. The key is the index of a value who is detected to be faulty based on parity encoding. 
     The value is a tuple: (value before correction, value after correction)
     '''
+
+    if args.thirty_two_bit_code:
+        block_size = 32
+
     assert len(tensor.size()) == 1, "The input tensor is not a 1-D vector. Current shape:{}".format(tensor.size())
     # 1. fault injection with correction 
     start = time.time()
@@ -325,9 +328,9 @@ def _inject_faults_random_bit_position_ecc(
     start = time.time() 
     stats = defaultdict(list)
     corr = {} 
-    shift_distance = int(math.log(args.num_mem_bits,2))
+    shift_distance = int(math.log(args.num_mem_bits, 2))
     for index in indexes:
-        vid, bid = index>>shift_distance, index&args.num_mem_bits
+        vid, bid = index>>shift_distance, index & args.num_mem_bits
         value = int(tensor[vid])
 
         assert value == tensor[vid], "value is not an integer," + str(value) + ', '+ str(tensor[vid])
