@@ -56,7 +56,7 @@ parser.add_argument('--checkpoint', default=None, type=str,
 parser.add_argument('--thirty-two-bit-code', action='store_true', default=False,
                     help='if true, use the 32-bit hamming code')
 
-parser.add_argument('--fault-rate-list', nargs='+', type=int, help='contains the list of fault rates')                    
+parser.add_argument('--fault-rate-list', nargs='+', type=float, help='contains the list of fault rates')                    
 
 args = parser.parse_args()
 from fault_util import *
