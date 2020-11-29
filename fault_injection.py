@@ -56,6 +56,8 @@ parser.add_argument('--checkpoint', default=None, type=str,
 parser.add_argument('--thirty-two-bit-code', action='store_true', default=False,
                     help='if true, use the 32-bit hamming code')
 
+parser.add_argument('--fault-rate-list', nargs='+', type=int, help='contains the list of fault rates')                    
+
 args = parser.parse_args()
 from fault_util import *
 torch.manual_seed(args.seed)
@@ -248,7 +250,7 @@ for i, item in enumerate(zip(weights_names, weights_sizes)):
 print('\nSimulation start: ', datetime.now())
 simulation_start = time.time()
 # fault_rates = [10**x for x in range(-9, -2, 1)]
-fault_rates = [0.0001] 
+fault_rates = args.fault-rate-list 
 for fault_rate in fault_rates:
     
     n_faults = int(total_values * args.num_mem_bits * fault_rate)
