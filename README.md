@@ -47,5 +47,8 @@ Source code for the paper accepeted in NIPS'19:
 * distiller 0.4.0
 * bitstring 3.1.5
 
-
-
+## Hardware configuration used
+Cuda- 10.1
+CPU- 700 GB standard disk
+GPU- 1 x NVIDIA Tesla P100
+OS- Ubuntu 16.04
