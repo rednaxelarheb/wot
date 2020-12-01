@@ -10,7 +10,7 @@ Source code for the paper accepeted in NIPS'19:
 
 * To reproduce QAT results:  
 
-1- Open run_wot.sh in edit mode. 
+1- Open run_wot.sh in edit mode. <br/>
 2- Set the mode as QAT. 
 3- Set the model for which the QAT needs to be performed. 
 4- In case the code needs to be run for 4-bit then pass the argument --four-bit else by default it will run for 8-bits. 
