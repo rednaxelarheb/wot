@@ -35,9 +35,10 @@ Source code for the paper accepeted in NIPS'19:
 2- Set the model for which the fault injection experiment needs to be performed. <br/>
 3- Set the mode for the experiment among faulty,inplace, zero, avg, ecc. <br/> 
 4- Set checkpoint as the path to the trained model. <br/>
-5- Provide the value to the parameter num_mem_bits and in case the code needs to be run for 32-bit hamming code i.e SEC-DED (32,26,1) then pass the argument as --thirty-two-bit-code else the code will run by default for SEC-DED (64,57,1). <br/>
-6- Save and exit run_fault_injection.sh <br/>
-7- `./run_fault_injection.sh `
+5- Provide the value to the parameter num_mem_bits. <br/>
+6- In case the code needs to be run for 32-bit hamming code i.e SEC-DED (32,26,1) then pass the argument as --thirty-two-bit-code else the code will run by default for SEC-DED (64,57,1). <br/>
+7- Save and exit run_fault_injection.sh <br/>
+8- `./run_fault_injection.sh `
 
 
 ## Required Packages
