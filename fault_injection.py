@@ -222,7 +222,7 @@ def perturb_weights(model, n_faults, trial_id, log_path, fault_injection_fn):
 fault_injection_fn = select_fault_injection_function()
 
 # select model 
-if args.fault_type == 'inplace':
+if args.checkpoint:
     model = models.__dict__[args.arch](pretrained=False)
     load_checkpoint(args.checkpoint)
 else:
