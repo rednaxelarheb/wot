@@ -135,7 +135,7 @@ def quantize_model_(model):
     #            mode=LinearQuantMode.SYMMETRIC, clip_acts=False, no_clip_layers=None, per_channel_wts=False,
     #            model_activation_stats=None):
     dummy_input = torch.empty(1, 3, 224, 224)
-    quantizer = distiller.quantization.PostTrainLinearQuantizer(model)
+    quantizer = distiller.quantization.PostTrainLinearQuantizer(model, bits_activations=args.num_mem_bits, bits_parameters=args.num_mem_bits)
     quantizer.prepare_model(dummy_input)
     
     # test the accuracy of the quantized model
