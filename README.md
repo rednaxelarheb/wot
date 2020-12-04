@@ -4,7 +4,7 @@ Source code for the paper accepeted in NIPS'19:
 *In-Place Zero-Space Memory Protection for CNN*
 
 ## Scripts
-* To reproduce accuracy results in the paper:
+### To reproduce accuracy results in the paper:
 
 1- Open run_accuracy.sh in edit mode. <br/>
 2- Update VALIDATION_SET_PATH to the path to your downloaded ImageNet dataset validation directory. <br/>
@@ -12,7 +12,7 @@ Source code for the paper accepeted in NIPS'19:
 4- In case the code needs to be run for 4-bit then pass the argument --four-bit else by default it will run for 8-bits. <br/>
 5- `./run_accuracy.sh `
 
-* To reproduce QAT results:  
+### To reproduce QAT results:  
 
 1- Open run_wot.sh in edit mode. <br/>
 2- Update DATASET_PATH to the path to your downloaded ImageNet dataset validation directory. <br/>
@@ -24,7 +24,7 @@ Source code for the paper accepeted in NIPS'19:
 8- Save and exit run_wot.sh <br/>
 9- `./run_wot.sh `
 
-* To reproduce WOT results:
+### To reproduce WOT results:
 
 1- Open run_wot.sh in edit mode. <br/>
 2- Update DATASET_PATH to the path to your downloaded ImageNet dataset validation directory. <br/>
@@ -37,7 +37,7 @@ Source code for the paper accepeted in NIPS'19:
 9- `./run_wot.sh `
 
 
-* To reproduce fault injection experiments:
+### To reproduce fault injection experiments:
 
 1- Open run_fault_injection.sh in edit mode. <br/>
 2- Update VALIDATION_SET_PATH to the path to your downloaded ImageNet dataset validation directory. <br/>
