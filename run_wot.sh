@@ -6,12 +6,15 @@ if [ ! -d "$DIRECTORY" ]; then
   mkdir log_wot
 fi
 
+DATASET_PATH='/home/abehr/datasets/imagenet/' 
+PROJECT_PATH='/home/abehr/wot/'
+
 ## batch size: 128 
 # model=alexnet
 model=resnet18
 # model=resnet34
 # model=squeezenet1_0
-python wot.py --four-bit --pretrained --arch ${model} --batch-size 128 --gpu 0 --mode ${mode} --lr 0.0001  |& tee ./log_wot/${model}_${mode}.txt
+python wot.py --four-bit --pretrained --arch ${model} --batch-size 128 --gpu 0 --mode ${mode} --lr 0.0001 --project-path ${PROJECT_PATH} --data ${DATASET_PATH} |& tee ./log_wot/${model}_${mode}.txt
 #python wot.py --pretrained --arch ${model} --batch-size 128 --gpu 0 --mode ${mode} --lr 0.0001  |& tee ./log_wot/${model}_${mode}.txt
 
 ## batch size: 64
