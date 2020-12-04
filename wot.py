@@ -37,6 +37,8 @@ print(model_names)
 parser = argparse.ArgumentParser(description='PyTorch ImageNet Training')
 parser.add_argument('--data', default='/home/abehr/datasets/imagenet/',
                     help='path to dataset')
+parser.add_argument('--project-path', default='/home/abehr/wot/',
+                    help='path to the project directory containing the .yaml config files')
 parser.add_argument('-a', '--arch', metavar='ARCH', default='resnet18',
                     choices=model_names,
                     help='model architecture: ' +
@@ -361,9 +363,9 @@ def main_worker(gpu, ngpus_per_node, args):
     compression_scheduler = distiller.CompressionScheduler(model) 
     schedule_path = ""
     if args.four_bit:
-        schedule_path = '/home/abehr/wot/quant_aware_training_four_bit.yaml'
+        schedule_path = args.project_path + 'quant_aware_training_four_bit.yaml'
     else : 
-        schedule_path = '/home/abehr/wot/quant_aware_training.yaml' 
+        schedule_path = args.project_path + 'quant_aware_training.yaml'
     compression_scheduler = distiller.file_config(
         model,
         optimizer, 
