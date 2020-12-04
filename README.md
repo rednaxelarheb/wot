@@ -5,8 +5,10 @@ Source code for the paper accepeted in NIPS'19:
 
 ## Scripts
 * To reproduce accuracy results in the paper:
-
-`./run_accuracy.sh `
+1- Open run_accuracy.sh in edit mode. <br/>
+2- Set the model/models for which the accuracy results needs to be obtained. <br/>
+3- In case the code needs to be run for 4-bit then pass the argument --four-bit else by default it will run for 8-bits. <br/>
+4- `./run_accuracy.sh `
 
 * To reproduce QAT results:  
 
