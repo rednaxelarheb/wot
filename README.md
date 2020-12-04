@@ -5,6 +5,7 @@ Source code for the paper accepeted in NIPS'19:
 
 ## Scripts
 * To reproduce accuracy results in the paper:
+
 1- Open run_accuracy.sh in edit mode. <br/>
 2- Update VALIDATION_SET_PATH to the path to your downloaded ImageNet dataset validation directory. <br/>
 3- Set the model/models for which the accuracy results needs to be obtained. <br/>
