@@ -79,7 +79,7 @@ def print_weight_distribution(model):
     
     # check the distribution of parameters all weights
     thr = 32
-    ranges = []
+    ranges = ['[0, 32)', '[32, 64)', '[64, 128]']
     if args.four_bit:
         thr = 4
         ranges = ['[0, 4)', '[4, 8)', '[8, 16]']
@@ -95,7 +95,7 @@ def print_weight_distribution(model):
     tmp = sorted(counter.items(), key=lambda x: x[0])
     values, counts = zip(*tmp)
     
-    # merge the interval [64, 96] and [96, 128]
+    # merge the last 2 intervals
     values = list(values)[:-1]
     counts = list(counts)
     counts[-2] += counts[-1]
