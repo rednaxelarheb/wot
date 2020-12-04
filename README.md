@@ -27,7 +27,7 @@ Source code for the paper accepeted in NIPS'19:
 ### To reproduce WOT results:
 
 1. Open run_wot.sh in edit mode. <br/>
-2. Update DATASET_PATH to the path to your downloaded ImageNet dataset validation directory. <br/>
+2. Update DATASET_PATH to the path to your downloaded ImageNet dataset root directory. <br/>
 3. Update PROJECT_PATH to the path to your WOT directory (which should contain the .yaml configuration files). <br/>
 4. Set the mode as WOT. <br/>
 5. Set the model for which the WOT needs to be performed. <br/>
