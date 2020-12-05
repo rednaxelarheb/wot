@@ -10,6 +10,7 @@ Source code for the paper accepeted in NIPS'19:
 2. Update VALIDATION_SET_PATH to the path to your downloaded ImageNet dataset validation directory. <br/>
 3. Set the model/models for which the accuracy results needs to be obtained. <br/>
 4. In case the code needs to be run for 4-bit then pass the argument --four-bit else by default it will run for 8-bits. <br/>
+5. Save and exit run_accuracy.sh. <br/>
 5. `./run_accuracy.sh `
 
 ### To reproduce QAT results:  
